@@ -14,5 +14,7 @@ object EventBus {
 
 sealed interface Event {
     data class Toast(val message: String) : Event
+    data class Snackbar(val message: String) : Event
+    data class Dialoig(val title: String, val message:String) : Event
     object NavigateToHomeScreen : Event
 }
