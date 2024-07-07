@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.loc.androidarchitecturesample.ui.view.products_screen.ProductsScreen
+import com.loc.androidarchitecturesample.ui.view.products.ProductsScreen
 import com.loc.androidarchitecturesample.ui.theme.AndroidArchitectureSampleTheme
 import com.loc.androidarchitecturesample.utils.Event
 import com.loc.androidarchitecturesample.utils.EventBus

@@ -1,4 +1,4 @@
-package com.loc.androidarchitecturesample.ui.view.products_screen
+package com.loc.androidarchitecturesample.ui.view.products
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.loc.androidarchitecturesample.ui.view.products_screen.components.ProductCard
+import com.loc.androidarchitecturesample.ui.view.products.components.ProductCard
 import com.loc.androidarchitecturesample.ui.view.util.components.LoadingDialog
 import com.loc.androidarchitecturesample.ui.view.util.components.MyTopAppBar
 import com.loc.androidarchitecturesample.viewmodels.ProductsViewModel
-import com.loc.androidarchitecturesample.viewmodels.ViewModelState
+import com.loc.androidarchitecturesample.viewmodels.ProductViewModelState
 
 @Composable
 internal fun ProductsScreen() {
@@ -30,7 +30,7 @@ internal fun ProductsScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsContent(
-    state: ViewModelState
+    state: ProductViewModelState
 ) {
     LoadingDialog(isLoading = state.isLoading)
     Scaffold(

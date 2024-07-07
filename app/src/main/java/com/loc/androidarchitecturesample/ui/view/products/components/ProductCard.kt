@@ -1,4 +1,4 @@
-package com.loc.androidarchitecturesample.ui.view.products_screen.components
+package com.loc.androidarchitecturesample.ui.view.products.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
