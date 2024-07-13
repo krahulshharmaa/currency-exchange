@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AndroidArchitectureSample"
+rootProject.name = "Currency Exchange"
 include(":app")
  

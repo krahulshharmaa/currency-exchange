@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "995887426110",
+    "project_id": "currency-exchange-b45ce",
+    "storage_bucket": "currency-exchange-b45ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995887426110:android:2e44dbab204d8b75ea3f6f",
+        "android_client_info": {
+          "package_name": "com.currency.flip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkdaYekM2uuXsg8hn09rOafGrDjNAFedA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
