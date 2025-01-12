@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2023.10.1  # Use an appropriate CircleCI Android image
+      - image: cimg/android:2023.10.1  # CircleCI's Android image, comes with Android SDK preinstalled
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -13,33 +13,20 @@ jobs:
   build:
     executor: android
     steps:
-      # Step 1: Checkout code
       - checkout
       - run:
-          name: Install Android SDK
+          name: Install SDK Dependencies
           command: |
-            apt-get update && apt-get install -y curl unzip coreutils
-            # Install Android SDK command-line tools if not already installed
-            if [ ! -d "/opt/android-sdk/cmdline-tools" ]; then
-              echo "Installing Android SDK command-line tools..."
-              mkdir -p /opt/android-sdk/cmdline-tools
-              curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-              unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
-              rm sdk-tools.zip
-              mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
-            fi
             # Update SDK and install necessary platforms and build-tools
             yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --update
             yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
             # Accept the licenses for Android SDK components
             yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --licenses
 
-      # Step 2: Make gradlew executable
       - run:
           name: Make gradlew executable
           command: chmod +x gradlew
 
-      # Step 3: Build APK
       - run:
           name: Build Release APK
           command: ./gradlew assembleRelease
