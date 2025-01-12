@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2023.10.1  # CircleCI Android Docker image
+      - image: ubuntu:20.04  # Use a full Ubuntu image
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -20,8 +20,8 @@ jobs:
       - run:
           name: Install curl, unzip, and Android SDK
           command: |
-            # Use root permissions to install curl and unzip (if necessary)
-            apt update && apt install -y curl unzip
+            # Install required tools on Ubuntu
+            apt update && apt install -y curl unzip openjdk-17-jdk
 
             # Download and install Android SDK command-line tools
             curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
