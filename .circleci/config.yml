@@ -18,7 +18,14 @@ jobs:
       - run:
           name: Install Android SDK
           command: |
-            yes | sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33"
+            curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+            mkdir -p /opt/android-sdk/cmdline-tools
+            unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
+            rm sdk-tools.zip
+            mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
+            
+            # Install SDK platform-tools and Android 33 platform
+            /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33"
       
 
       - run:
