@@ -18,17 +18,8 @@ jobs:
       - run:
           name: Install Android SDK
           command: |
-            sudo apt update
-            sudo apt install -y wget unzip
-            wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-            unzip cmdline-tools.zip -d android-sdk
-            sudo mv android-sdk /usr/local/android-sdk
-            yes | /usr/local/android-sdk/cmdline-tools/bin/sdkmanager --licenses
-            /usr/local/android-sdk/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33"
-            echo 'export ANDROID_HOME=/usr/local/android-sdk' >> ~/.bashrc
-            echo 'export PATH=$ANDROID_HOME/cmdline-tools/bin:$PATH' >> ~/.bashrc
-            source ~/.bashrc
-            
+            yes | sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33"
+      
 
       - run:
           name: Make gradlew executable
