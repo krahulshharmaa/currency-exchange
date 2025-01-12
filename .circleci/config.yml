@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: circleci/android:api-30  # Use an appropriate CircleCI Android image
+      - image: cimg/android:2023.01-jdk17  # Use an appropriate CircleCI Android image
     working_directory: ~/repo
 
 jobs:
@@ -12,23 +12,6 @@ jobs:
     steps:
       # Step 1: Checkout code
       - checkout
-
-      - run:
-          name: Add GPG key for Cloud SDK
-          command: |
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C0BA5CE6DC6315A3
-            sudo apt update
-
-      - run:
-          name: Installing Java 17
-          command: |
-            sudo apt update
-            sudo apt install -y openjdk-17-jdk
-            java -version
-
-      - run:
-          name: Set JAVA_HOME to Java 17
-          command: export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
       - run:
           name: Make gradlew executable
