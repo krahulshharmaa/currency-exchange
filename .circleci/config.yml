@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: ubuntu:20.04  # Use a full Ubuntu image
+      - image: cimg/android:2023.10.1  # Pre-configured Android image from CircleCI
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -16,24 +16,15 @@ jobs:
       # Step 1: Checkout code
       - checkout
 
-      # Step 2: Install necessary tools and Android SDK
+      # Step 2: Install Android SDK components
       - run:
-          name: Install curl, unzip, and Android SDK
+          name: Install Android SDK
           command: |
-            # Install required tools on Ubuntu
-            apt update && apt install -y curl unzip openjdk-17-jdk
+            # Ensure the sdkmanager is available
+            yes | sdkmanager --update
+            sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
 
-            # Download and install Android SDK command-line tools
-            curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-            mkdir -p /opt/android-sdk/cmdline-tools
-            unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
-            rm sdk-tools.zip
-            mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
-
-            # Install platform-tools and Android 33 platform
-            /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
-
-      # Step 3: Make Gradle wrapper executable
+      # Step 3: Make gradlew executable
       - run:
           name: Make gradlew executable
           command: chmod +x gradlew
