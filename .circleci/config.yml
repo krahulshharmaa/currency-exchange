@@ -5,6 +5,9 @@ executors:
     docker:
       - image: cimg/openjdk:17.0.1  # Use an appropriate CircleCI Android image
     working_directory: ~/repo
+    environment:
+      ANDROID_HOME: /opt/android-sdk  # Define the SDK location
+      PATH: /opt/android-sdk/cmdline-tools/latest/bin:$PATH
 
 jobs:
   build:
