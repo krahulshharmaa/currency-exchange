@@ -35,22 +35,6 @@ jobs:
           name: Build Release APK
           command: ./gradlew assembleRelease
 
-      # Step 6: Sign the APK
-      - run:
-          name: Sign APK
-          command: |
-            echo "$KEYSTORE" | base64 --decode > keystore.jks
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-              -keystore keystore.jks -storepass "$KEYSTORE_PASSWORD" \
-              -keypass "$KEY_PASSWORD" app/build/outputs/apk/release/app-release-unsigned.apk "$KEY_ALIAS"
-            zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
-
-      # Step 7: Deploy to Google Play
-      - run:
-          name: Deploy to Google Play
-          command: |
-            echo "$SERVICE_ACCOUNT_JSON" | base64 --decode > service-account.json
-            fastlane supply --json_key service-account.json \
-                            --package_name com.your.package.name \
-                            --apk app/build/outputs/apk/release/app-release.apk \
-                            --track production
+      - store_artifacts:
+          path: app/build/outputs/apk/release/
+          destination: apk
