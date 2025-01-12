@@ -12,32 +12,41 @@ jobs:
     steps:
       # Step 1: Checkout code
       - checkout
+
+      # Step 2: Make gradlew executable
       - run:
           name: Make gradlew executable
+          command: chmod +x gradlew
 
-
-      # Step 2: Restore Gradle dependencies
+      # Step 3: Restore Gradle dependencies
       - restore_cache:
           keys:
             - gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
             - gradle-cache-
 
-      # Step 3: Set up dependencies
+      # Step 4: Set up dependencies
       - run:
           name: Install Dependencies
           command: ./gradlew dependencies
 
-      # Step 4: Save Gradle cache
+      # Step 5: Save Gradle cache
       - save_cache:
           paths:
             - ~/.gradle/caches
           key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
 
-      # Step 5: Build APK
+      # Step 6: Build APK
       - run:
           name: Build Release APK
           command: ./gradlew assembleRelease
 
+      # Step 7: Store artifacts (APK)
       - store_artifacts:
           path: app/build/outputs/apk/release/
           destination: apk
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
