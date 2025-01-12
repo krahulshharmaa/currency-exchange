@@ -14,6 +14,17 @@ jobs:
       - checkout
 
       - run:
+          name: Installing Java 17
+          command: |
+            sudo apt update
+            sudo apt install -y openjdk-17-jdk
+            java -version
+
+      - run:
+          name: Set JAVA_HOME to Java 17
+          command: export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+      - run:
           name: Make gradlew executable
           command: chmod +x gradlew
 
