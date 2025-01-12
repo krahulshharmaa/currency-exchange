@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2023.10.1  # Use an appropriate CircleCI Android image
+      - image: cimg/android:2023.10.1  # CircleCI Android Docker image
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -15,48 +15,55 @@ jobs:
     steps:
       # Step 1: Checkout code
       - checkout
+
+      # Step 2: Install Android SDK command-line tools and SDK components
       - run:
           name: Install Android SDK
           command: |
-            apt-get update && apt-get install -y curl unzip
-            
             # Download and install Android SDK command-line tools
             curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
             mkdir -p /opt/android-sdk/cmdline-tools
             unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
             rm sdk-tools.zip
             mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
-            
-            # Install SDK platform-tools and Android 33 platform
-            /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33"
-      
 
+            # Install platform-tools and Android 33 platform
+            /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+
+      # Step 3: Make Gradle wrapper executable
       - run:
           name: Make gradlew executable
           command: chmod +x gradlew
 
-      # Step 2: Restore Gradle dependencies
+      # Step 4: Restore Gradle cache
       - restore_cache:
           keys:
             - gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
             - gradle-cache-
 
-      # Step 3: Set up dependencies
+      # Step 5: Install Gradle dependencies
       - run:
           name: Install Dependencies
           command: ./gradlew dependencies
 
-      # Step 4: Save Gradle cache
+      # Step 6: Save Gradle cache
       - save_cache:
           paths:
             - ~/.gradle/caches
           key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
 
-      # Step 5: Build APK
+      # Step 7: Build APK
       - run:
           name: Build Release APK
           command: ./gradlew assembleRelease
 
+      # Step 8: Store APK as an artifact
       - store_artifacts:
           path: app/build/outputs/apk/release/
           destination: apk
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
