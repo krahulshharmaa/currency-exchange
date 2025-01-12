@@ -16,10 +16,13 @@ jobs:
       # Step 1: Checkout code
       - checkout
 
-      # Step 2: Install Android SDK command-line tools and SDK components
+      # Step 2: Install necessary tools and Android SDK
       - run:
-          name: Install Android SDK
+          name: Install curl, unzip, and Android SDK
           command: |
+            # Use root permissions to install curl and unzip (if necessary)
+            apt update && apt install -y curl unzip
+
             # Download and install Android SDK command-line tools
             curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
             mkdir -p /opt/android-sdk/cmdline-tools
