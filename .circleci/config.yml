@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: circleci/android:api-30  # Use an appropriate CircleCI Android image
+      - image: ubuntu:20.04  # Use a Debian-based image
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -16,7 +16,7 @@ jobs:
       # Step 1: Checkout code
       - checkout
 
-      # Step 2: Install missing dependencies like mkdir, curl, unzip, etc.
+      # Step 2: Install dependencies like curl, unzip, etc.
       - run:
           name: Install dependencies
           command: |
@@ -26,7 +26,6 @@ jobs:
       - run:
           name: Install Android SDK command-line tools
           command: |
-            # Install SDK tools if they aren't installed already
             mkdir -p /opt/android-sdk/cmdline-tools
             curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
             unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
@@ -50,9 +49,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: ./gradlew dependencies
-
-      # Step 7: Save Gradle cache
-      - save_cache:
+            
+            # Step 7: Save Gradle cache
+            - save_cache:
           paths:
             - ~/.gradle/caches
           key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
