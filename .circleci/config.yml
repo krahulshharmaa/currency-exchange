@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: openjdk:17-alpine  # Alpine-based OpenJDK image (minimal)
+      - image: circleci/openjdk:17  # Ubuntu-based OpenJDK image
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -16,11 +16,11 @@ jobs:
       # Step 1: Checkout code
       - checkout
 
-      # Step 2: Install missing utilities (using Alpine's apk)
+      # Step 2: Install missing utilities using apt-get
       - run:
           name: Install missing utilities
           command: |
-            apk update && apk add curl unzip coreutils
+            apt-get update && apt-get install -y curl unzip coreutils
 
       # Step 3: Install Android SDK if needed
       - run:
