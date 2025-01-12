@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: circleci/android:2023.12.1  # Use an appropriate CircleCI Android image
+      - image: circleci/android:api-30  # Use an appropriate CircleCI Android image
     working_directory: ~/repo
 
 jobs:
