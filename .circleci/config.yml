@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: openjdk:17-alpine  # Alpine-based OpenJDK image (minimal)
+      - image: circleci/android:api-30  # Alpine-based OpenJDK image (minimal)
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
