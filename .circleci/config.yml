@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: ubuntu:20.04  # Use a Debian-based image
+      - image: cimg/python:3.9  # Change to an image with apt-get and utilities
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -49,9 +49,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: ./gradlew dependencies
-            
-            # Step 7: Save Gradle cache
-            - save_cache:
+
+      # Step 7: Save Gradle cache
+      - save_cache:
           paths:
             - ~/.gradle/caches
           key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
