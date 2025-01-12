@@ -13,6 +13,10 @@ jobs:
       # Step 1: Checkout code
       - checkout
 
+      - run:
+          name: Make gradlew executable
+          command: chmod +x gradlew
+
       # Step 2: Restore Gradle dependencies
       - restore_cache:
           keys:
