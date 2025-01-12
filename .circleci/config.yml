@@ -1,29 +1,56 @@
 version: 2.1
+
+executors:
+  android:
+    docker:
+      - image: circleci/android:2023.12.1  # Use an appropriate CircleCI Android image
+    working_directory: ~/repo
+
 jobs:
   build:
-    docker:
-      -image: cimg/android:2023.12
-
+    executor: android
     steps:
+      # Step 1: Checkout code
       - checkout
 
-      - run: chmod +x project_setup.sh
+      # Step 2: Restore Gradle dependencies
+      - restore_cache:
+          keys:
+            - gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+            - gradle-cache-
+
+      # Step 3: Set up dependencies
       - run:
-          name: Setting Up Project Environment
-          command: ./project_setup.sh
+          name: Install Dependencies
+          command: ./gradlew dependencies
 
-      - run: chmond +x gradlew
+      # Step 4: Save Gradle cache
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+      # Step 5: Build APK
       - run:
-          name: Android Gradle Build
-          command: ./gradlew clean assemble bundle --stacktrace
+          name: Build Release APK
+          command: ./gradlew assembleRelease
 
-      - store_artifacts:
-          path: app/build/outputs/apk
+      # Step 6: Sign the APK
+      - run:
+          name: Sign APK
+          command: |
+            echo "$KEYSTORE" | base64 --decode > keystore.jks
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+              -keystore keystore.jks -storepass "$KEYSTORE_PASSWORD" \
+              -keypass "$KEY_PASSWORD" app/build/outputs/apk/release/app-release-unsigned.apk "$KEY_ALIAS"
+            zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
 
-      - store_artifacts:
-          path: app/build/outputs/bundle
-
-
-
-
-
+      # Step 7: Deploy to Google Play
+      - run:
+          name: Deploy to Google Play
+          command: |
+            echo "$SERVICE_ACCOUNT_JSON" | base64 --decode > service-account.json
+            fastlane supply --json_key service-account.json \
+                            --package_name com.your.package.name \
+                            --apk app/build/outputs/apk/release/app-release.apk \
+                            --track production
