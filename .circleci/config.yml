@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2023.10.1  # Use CircleCI Android image with Android SDK tools
+      - image: cimg/android:2023.10.1  # Use an appropriate CircleCI Android image
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -15,58 +15,35 @@ jobs:
     steps:
       # Step 1: Checkout code
       - checkout
-
-      # Step 2: Install required utilities
       - run:
-          name: Install required utilities (curl, yes, unzip)
+          name: Install Android SDK
           command: |
             apt-get update && apt-get install -y curl unzip coreutils
-            # Ensure sdkmanager is available and update SDK
-            yes | sdkmanager --update
+            # Install Android SDK command-line tools if not already installed
+            if [ ! -d "/opt/android-sdk/cmdline-tools" ]; then
+              echo "Installing Android SDK command-line tools..."
+              mkdir -p /opt/android-sdk/cmdline-tools
+              curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+              unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
+              rm sdk-tools.zip
+              mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
+            fi
+            # Update SDK and install necessary platforms and build-tools
+            yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --update
+            yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+            # Accept the licenses for Android SDK components
+            yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --licenses
 
-      # Step 3: Install Android SDK components
-      - run:
-          name: Install Android SDK components
-          command: |
-            # Install SDK components
-            sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
-            # Accept SDK licenses
-            yes | sdkmanager --licenses
-
-      # Step 4: Make gradlew executable
+      # Step 2: Make gradlew executable
       - run:
           name: Make gradlew executable
           command: chmod +x gradlew
 
-      # Step 5: Restore Gradle cache
-      - restore_cache:
-          keys:
-            - gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-            - gradle-cache-
-
-      # Step 6: Install Gradle dependencies
-      - run:
-          name: Install Dependencies
-          command: ./gradlew dependencies
-
-      # Step 7: Save Gradle cache
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
-          key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
-      # Step 8: Build APK
+      # Step 3: Build APK
       - run:
           name: Build Release APK
           command: ./gradlew assembleRelease
 
-      # Step 9: Store APK as an artifact
       - store_artifacts:
           path: app/build/outputs/apk/release/
           destination: apk
-
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build
