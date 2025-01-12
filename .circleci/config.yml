@@ -5,6 +5,9 @@ executors:
     docker:
       - image: cimg/android:2023.10.1  # Use an appropriate CircleCI Android image
     working_directory: ~/repo
+    environment:
+      ANDROID_HOME: /opt/android-sdk
+      PATH: /opt/android-sdk/cmdline-tools/latest/bin:$PATH
 
 jobs:
   build:
