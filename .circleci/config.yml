@@ -18,6 +18,9 @@ jobs:
       - run:
           name: Install Android SDK
           command: |
+            apt-get update && apt-get install -y curl unzip
+            
+            # Download and install Android SDK command-line tools
             curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
             mkdir -p /opt/android-sdk/cmdline-tools
             unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
