@@ -1,74 +1,66 @@
-version: 2.1
+name: Android CI
 
-executors:
-  android:
-    docker:
-      - image: openjdk:17-alpine  # Alpine-based OpenJDK image (minimal)
-    working_directory: ~/repo
-    environment:
-      ANDROID_HOME: /opt/android-sdk
-      PATH: /opt/android-sdk/cmdline-tools/latest/bin:$PATH
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    executor: android
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
     steps:
       # Step 1: Checkout code
-      - checkout
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Step 2: Install missing utilities (using Alpine's apk)
-      - run:
-          name: Install missing utilities
-          command: |
-            apk update && apk add curl unzip coreutils
+      # Step 2: Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'  # Set Java version to 17
+          distribution: 'adoptopenjdk'  # Use the AdoptOpenJDK distribution
 
-      # Step 3: Install Android SDK if needed
-      - run:
-          name: Install Android SDK
-          command: |
-            if [ ! -d "/opt/android-sdk" ]; then
-              mkdir -p /opt/android-sdk/cmdline-tools
-              curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-              unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
-              rm sdk-tools.zip
-              mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
-              /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
-            fi
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl unzip
 
-      # Step 4: Make gradlew executable
-      - run:
-          name: Make gradlew executable
-          command: chmod +x gradlew
+      # Step 4: Install Android SDK
+      - name: Install Android SDK
+        run: |
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          unzip sdk-tools.zip -d $HOME/android-sdk/cmdline-tools
+          rm sdk-tools.zip
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
 
-      # Step 5: Restore Gradle dependencies
-      - restore_cache:
-          keys:
-            - gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-            - gradle-cache-
+      # Step 5: Set up Gradle wrapper permissions
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      # Step 6: Set up dependencies
-      - run:
-          name: Install Dependencies
-          command: ./gradlew dependencies
+      # Step 6: Restore Gradle cache
+      - name: Restore Gradle cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: gradle-cache-${{ checksum('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-cache-
 
-      # Step 7: Save Gradle cache
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
-          key: gradle-cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      # Step 7: Build APK
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
 
-      # Step 8: Build APK
-      - run:
-          name: Build Release APK
-          command: ./gradlew assembleRelease
-
-      # Step 9: Store APK artifacts
-      - store_artifacts:
+      # Step 8: Store APK artifacts
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: apk
           path: app/build/outputs/apk/release/
-          destination: apk
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build
