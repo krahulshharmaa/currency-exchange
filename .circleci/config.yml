@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: circleci/android:api-30  # Use the appropriate CircleCI Android image
+      - image: circleci/android:api-30-alpine  # Alpine-based image
     working_directory: ~/repo
 
 jobs:
@@ -12,12 +12,12 @@ jobs:
     steps:
       - checkout
 
-      # Step to install necessary dependencies
+      # Step to install necessary dependencies (apk for Alpine-based image)
       - run:
           name: Install dependencies (curl, unzip, coreutils)
           command: |
-            sudo apt-get update
-            sudo apt-get install -y curl unzip coreutils
+            apk update
+            apk add curl unzip coreutils
 
       # Other steps in your build process go here
       - run:
