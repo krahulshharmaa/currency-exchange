@@ -32,7 +32,7 @@ jobs:
               unzip sdk-tools.zip -d /opt/android-sdk/cmdline-tools
               rm sdk-tools.zip
               mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
-              /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+              /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
             fi
 
       # Step 4: Make gradlew executable
