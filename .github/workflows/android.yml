@@ -30,15 +30,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl unzip
 
-      # Step 4: Install Android SDK
-      - name: Install Android SDK
-        run: |
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-          unzip sdk-tools.zip -d $HOME/android-sdk/cmdline-tools
-          rm sdk-tools.zip
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       # Step 5: Set up Gradle wrapper permissions
       - name: Make gradlew executable
