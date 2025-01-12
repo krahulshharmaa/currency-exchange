@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: circleci/openjdk:17  # Use an appropriate CircleCI Android image
+      - image: usabillabv/android:api-33-jdk17  # Use an appropriate CircleCI Android image
     working_directory: ~/repo
 
 jobs:
