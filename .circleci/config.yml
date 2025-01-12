@@ -9,8 +9,8 @@ jobs:
 
       - run: chmod +x project_setup.sh
       - run:
-        name: Setting Up Project Environment
-        command: ./project_setup.sh
+          name: Setting Up Project Environment
+          command: ./project_setup.sh
 
       - run: chmond +x gradlew
       - run:
