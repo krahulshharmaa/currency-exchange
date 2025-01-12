@@ -14,6 +14,12 @@ jobs:
       - checkout
 
       - run:
+          name: Add GPG key for Cloud SDK
+          command: |
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C0BA5CE6DC6315A3
+            sudo apt update
+
+      - run:
           name: Installing Java 17
           command: |
             sudo apt update
