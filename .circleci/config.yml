@@ -3,7 +3,7 @@ version: 2.1
 executors:
   android:
     docker:
-      - image: cimg/android:2023.10.1  # Pre-configured Android image from CircleCI
+      - image: cimg/android:2023.10.1  # Use CircleCI Android image with Android SDK tools
     working_directory: ~/repo
     environment:
       ANDROID_HOME: /opt/android-sdk
@@ -20,9 +20,11 @@ jobs:
       - run:
           name: Install Android SDK
           command: |
-            # Ensure the sdkmanager is available
+            # Install and update the SDK manager
+            echo "Updating SDK manager..."
             yes | sdkmanager --update
             sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+            yes | sdkmanager --licenses  # Accept licenses automatically
 
       # Step 3: Make gradlew executable
       - run:
